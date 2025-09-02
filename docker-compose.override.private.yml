@@ -1,8 +1,4 @@
 services:
-  flowise:
-    ports:
-      - 127.0.0.1:3001:3001
-
   open-webui:
     ports:
       - 127.0.0.1:8080:8080
@@ -48,10 +44,6 @@ services:
   redis:
     ports:
       - 127.0.0.1:6379:6379
-
-  searxng:
-    ports:
-      - 127.0.0.1:8081:8080
 
   ollama-cpu:
     ports:
