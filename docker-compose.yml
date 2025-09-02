@@ -6,7 +6,6 @@ volumes:
   ollama_storage:
   qdrant_storage:
   open-webui:
-  flowise:
   caddy-data:
   caddy-config:
   valkey-data:
@@ -54,22 +53,6 @@ x-init-ollama: &init-ollama
     - "sleep 3; OLLAMA_HOST=ollama:11434 ollama pull qwen2.5:7b-instruct-q4_K_M; OLLAMA_HOST=ollama:11434 ollama pull nomic-embed-text"
 
 services:
-  flowise:
-    image: flowiseai/flowise
-    restart: unless-stopped
-    container_name: flowise
-    expose:
-      - 3001/tcp
-    environment:
-        - PORT=3001
-        - FLOWISE_USERNAME=${FLOWISE_USERNAME}
-        - FLOWISE_PASSWORD=${FLOWISE_PASSWORD}
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    volumes:
-        - ~/.flowise:/root/.flowise
-    entrypoint: /bin/sh -c "sleep 3; flowise start"
-
   open-webui:
     image: ghcr.io/open-webui/open-webui:main
     restart: unless-stopped
@@ -330,30 +313,6 @@ services:
       interval: 3s
       timeout: 10s
       retries: 10
-
-  searxng:
-    container_name: searxng
-    image: docker.io/searxng/searxng:latest
-    restart: unless-stopped
-    expose:
-      - 8080/tcp
-    volumes:
-      - ./searxng:/etc/searxng:rw
-    environment:
-      - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
-      - UWSGI_WORKERS=${SEARXNG_UWSGI_WORKERS:-4}
-      - UWSGI_THREADS=${SEARXNG_UWSGI_THREADS:-4}
-    cap_drop:
-      - ALL
-    cap_add:
-      - CHOWN
-      - SETGID
-      - SETUID
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "1m"
-        max-file: "1"
 
   ollama-cpu:
     profiles: ["cpu"]
